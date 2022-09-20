@@ -1,0 +1,215 @@
+/* body {
+  margin: 2vmin;
+  padding: 2vmin;
+}  */
+@import url('https://fonts.googleapis.com/css2?family=Comforter&family=Kanit&family=Lato:wght@700&family=League+Spartan:wght@500&family=Libre+Baskerville:ital@1&family=Merriweather&family=Ubuntu:wght@300&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Comforter&family=EB+Garamond:ital,wght@1,600&family=Kanit&family=Lato:wght@700&family=League+Spartan:wght@500&family=Libre+Baskerville:ital@1&family=Merriweather&family=Ubuntu:wght@300&display=swap');
+.landing {
+  background-image: linear-gradient(rgba(255,255,255,0.2), rgba(255,255,255,0.2)), url('./images/bg1.jpg');
+  /* background-image: url('./images/bg.jpg'); */
+  background-repeat: no-repeat;
+  background-size: cover;
+  width: 100vw;
+  height: 100vh;
+}
+
+.navbar {
+  /* background-color: rgba(176, 146, 194, 0.7); */
+  background-color: rgba(73, 80, 87, 0.5);
+}
+
+.navbar-brand {
+  font-weight: bold;
+  font-size: 4vmin;
+  color: white;
+  font-family: 'League Spartan', sans-serif;
+}
+
+.nav-link{
+  padding-left: 4vmin;
+  padding-right: 4vmin;
+  font-size: 3vmin;
+  color: rgba(255,255,255,.55);
+  font-family: 'League Spartan', sans-serif;
+}
+
+.nav-link:hover, .nav-link:active {
+  color: rgba(255,255,255,0.8);
+  font-size: 3.2vmin;
+}
+
+.logoutbtn {
+  background-color: transparent;
+  border: none;
+}
+
+#lastlink {
+  padding-right: 0;
+}
+
+.header-text {
+  margin-left: 38vmin;
+  width: 80vmin;
+  margin-top: 20vmin;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #290652;
+  font-family: 'EB Garamond', serif;
+}
+
+.header-text h1 {
+  /* font-weight: lighter; */
+  font-size: 7vmin;
+  text-align: center;
+}
+
+.header-text h2 {
+  /* font-weight: lighter; */
+  font-size: 3vmin;
+  text-align: center;
+  margin-top: 3vmin;
+}
+
+
+/* CSS */
+.header-text button {
+  margin-top: 3vmin;
+  align-items: center;
+  appearance: none;
+  background-color: #a4508b;
+  background-image: linear-gradient(326deg, #a4508b 0%, #5f0a87 74%);
+
+  border: 0;
+  border-radius: 6px;
+  box-shadow: rgba(45, 35, 66, .4) 0 2px 4px,rgba(45, 35, 66, .3) 0 7px 13px -3px,rgba(58, 65, 111, .5) 0 -3px 0 inset;
+  box-sizing: border-box;
+  color: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  font-family: "JetBrains Mono",monospace;
+  height: 48px;
+  justify-content: center;
+  line-height: 1;
+  list-style: none;
+  overflow: hidden;
+  padding-left: 16px;
+  padding-right: 16px;
+  position: relative;
+  text-align: left;
+  text-decoration: none;
+  transition: box-shadow .15s,transform .15s;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  white-space: nowrap;
+  will-change: box-shadow,transform;
+  font-size: 18px;
+}
+
+.header-text button:focus {
+  box-shadow: black 0 0 0 1.5px inset, rgba(45, 35, 66, .4) 0 2px 4px, rgba(45, 35, 66, .3) 0 7px 13px -3px, black 0 -3px 0 inset;
+}
+
+.header-text button:hover {
+  box-shadow: rgba(45, 35, 66, .4) 0 4px 8px, rgba(45, 35, 66, .3) 0 7px 13px -3px, black 0 -3px 0 inset;
+  transform: translateY(-2px);
+}
+
+.header-text button:active {
+  box-shadow: #3c4fe0 0 3px 7px inset;
+  transform: translateY(2px);
+}
+
+.register-main, .login-main {
+  background-image: url('https://media.istockphoto.com/photos/purple-defocused-blurred-motion-abstract-background-picture-id1273929462?k=20&m=1273929462&s=612x612&w=0&h=jJ0xkuDVJQMp6YwnAiqbtM8nwid36M97VIFxCP_sKCE=');
+  background-repeat: no-repeat;
+  background-size: cover;
+  height: 100vmin;
+}
+ 
+         
+.register-main button, .login-main button{
+  background-image: linear-gradient(to right, #9D50BB 0%, #6E48AA  51%, #9D50BB  100%);
+  margin: auto;
+  margin-top: 3.5vmin;
+  padding: 10px 30px;
+  text-align: center;
+  text-transform: uppercase;
+  transition: 0.5s;
+  background-size: 200% auto;
+  color: white;            
+  box-shadow: 0 0 20px #eee;
+  border: none;
+  border-radius: 4vmin;
+  display: block;
+}
+
+.register-main button:hover, .login-main button:hover{
+  background-position: right center; /* change the direction of the change here */
+  color: #fff;
+  text-decoration: none;
+}
+
+.register-main .card, .login-main .card {
+  top: 4.5vmin;
+  height: 81.5vmin;
+  padding: 2vmin;
+  margin: auto;
+  width: 78vmin;
+  border-radius: 10px;
+  background-color: rgb(250, 249, 246);
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+.login-main .card {
+  top: 10vmin;
+  height: 47vmin; 
+}
+
+.register-main .card form h1, .login-main .card form h1 {
+  text-align: center;
+}
+
+.register-main .card form, .login-main .card form {
+  margin: 0.5vmin 12vmin;
+}
+
+.register-main .card .form-item, .login-main .card .form-item {
+  display: flex;
+  flex-direction: column;
+
+}
+
+.register-main .card .form-item label, .login-main .card .form-item label {
+  color: #333;
+  font-size: 2vmin;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.register-main .card .form-item input, .login-main .card .form-item input {
+  border-radius: 2.5vmin;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  border: none;
+  background-color: rgb(250, 249, 246);
+
+}
+
+.about-main {
+  background-image: url('images/about-bg.png');
+  height: 80vh;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position-x: center;
+}
+
+.details .card {
+  top: 65vmin;
+  height: 25vmin;
+  margin: 0 1.5vmin;
+  background-color: #423078;
+  color: white;
+  box-shadow: rgba(55, 59, 61, 0.847) 0px 7px 29px 0px;
+}
