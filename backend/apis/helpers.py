@@ -1,7 +1,20 @@
 from urllib.parse import urlparse
 import requests
+from pprint import pprint
 
-URL = "https://api.github.com/"
+GITHUB_URL = "https://api.github.com/"
+headers = {
+    'Authorization': 'token TOKEN',
+}
+KEY = 'AIzaSyA78Bfr50t93zRCpnypkxEUulcpGFdgIA0'
+GOOGLE_BOOKS_KEY = 'AIzaSyA78Bfr50t93zRCpnypkxEUulcpGFdgIA0'
+
+
+def rate_limit_check():
+    response = requests.get('https://api.github.com/rate_limit')
+    print(response.json()['resources']['core'])
+    remaining_requests = response.json()['resources']['core']['remaining']
+    return remaining_requests > 0
 
 
 def get_skills(github_profile):
@@ -9,24 +22,81 @@ def get_skills(github_profile):
     # 'https://www.github.com/tawishisharma/'
     data = urlparse(github_profile)
     owner = data.path
-    # print(owner)
-    # print(owner.path)
     # get public repositories from user github profile
-    repos_url = URL + "users" + owner + "repos"
-    # print(repos_url)
+    repos_url = GITHUB_URL + "users" + owner + "repos"
     response = requests.get(repos_url)
     repos_data = response.json()  # over fetching
-    languages = []
+    languages = set()
+
+    # todo: error handling for when rate limit exceeds in Github API
+    # problem: we are using a for loop and so we get rate limited when
+    # we do this for more than 60 repositories in a minute
+    # it takes approximately one hour to reset the limit to 60
+    '''For unauthenticated requests, the rate limit allows for up to 60 requests per hour. Unauthenticated requests are
+     associated with the originating IP address, and not the person making requests.
+     The Search API has a custom rate limit. For requests using Basic Authentication, OAuth, or client ID and secret, 
+     you can make up to 30 requests per minute. For unauthenticated requests, the rate limit allows you to make up to 
+     10 requests per minute.
+     '''
+
     for repo in repos_data:
         repo_name = repo['name']
-        # print(repo_name)
-        lang_url = URL + "repos" + owner + repo_name + "/languages"
-        # print(lang_url)
+        if not rate_limit_check():
+            return
+        lang_url = GITHUB_URL + "repos" + owner + repo_name + "/languages"
         response = requests.get(lang_url)
-        language = response.json()
-        # print(language)
-        languages.append(language)
+        repo_languages = list(response.json())
+        # print(language.keys())
+        print(repo_languages)  # todo : remove no. of bytes from the request data
+        for repo_language in repo_languages:
+            languages.add(repo_language)
 
-    print(languages)
+    languages = list(languages)
+    # print(languages)
     # put into database
     return languages
+
+
+def youtube_api(search_key):
+    """
+    Returns a list of max 20 videos per search_key
+    """
+    params = {'key': KEY, 'type': 'video', 'part': 'snippet', 'q': search_key, 'maxResults': 20}
+
+    response = requests.get('https://www.googleapis.com/youtube/v3/search', params = params)
+    # in response, we need the video id
+    # response > items > iterate over list items > id > videdId
+    # use this video id in YouTube url
+
+    videos = []
+
+    # get the videoId and hence the video of top 20 suggestions
+    # the general youTube url : https://www.youtube.com/watch?v=id
+    for video in response.json()['items']:
+        video_id = video['id']['videoId']
+        pprint(video_id)
+        video_url = 'https://www.youtube.com/watch?v=' + video_id
+        print(video_url)
+        # videos.append(video_url)
+    # return videos
+
+
+def google_books_api(search_key):
+    """
+       Returns a list of max 20 books per search_key
+    """
+    params = {'key': GOOGLE_BOOKS_KEY, 'q': search_key, 'maxResults': 20}
+
+    response = requests.get('https://www.googleapis.com/books/v1/volumes', params = params)
+    # in response, we need the url
+    # response > items > iterate over list items > id
+
+    books = []
+
+    # get the url and hence the books of top 20 suggestions
+    # the general youTube url : https://www.google.co.in/books/edition/
+    for book in response.json()['items']:
+        book_url = book['volumeInfo']['infoLink']
+        print(book_url)
+        # books.append(book_url)
+    # return books
