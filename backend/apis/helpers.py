@@ -12,7 +12,6 @@ GOOGLE_BOOKS_KEY = 'AIzaSyA78Bfr50t93zRCpnypkxEUulcpGFdgIA0'
 
 def rate_limit_check():
     response = requests.get('https://api.github.com/rate_limit')
-    print(response.json()['resources']['core'])
     remaining_requests = response.json()['resources']['core']['remaining']
     return remaining_requests > 0
 
@@ -40,21 +39,22 @@ def get_skills(github_profile):
      '''
 
     for repo in repos_data:
-        repo_name = repo['name']
         if not rate_limit_check():
-            return
+            return []
+        repo_name = repo['name']
         lang_url = GITHUB_URL + "repos" + owner + repo_name + "/languages"
         response = requests.get(lang_url)
         repo_languages = list(response.json())
-        # print(language.keys())
-        print(repo_languages)  # todo : remove no. of bytes from the request data
+        # print(repo_languages)  # todo : remove no. of bytes from the request data
         for repo_language in repo_languages:
             languages.add(repo_language)
 
     languages = list(languages)
-    # print(languages)
     # put into database
     return languages
+
+
+# image link, url, title, description, source
 
 
 def youtube_api(search_key):
@@ -62,7 +62,6 @@ def youtube_api(search_key):
     Returns a list of max 20 videos per search_key
     """
     params = {'key': KEY, 'type': 'video', 'part': 'snippet', 'q': search_key, 'maxResults': 20}
-
     response = requests.get('https://www.googleapis.com/youtube/v3/search', params = params)
     # in response, we need the video id
     # response > items > iterate over list items > id > videdId
@@ -74,11 +73,20 @@ def youtube_api(search_key):
     # the general youTube url : https://www.youtube.com/watch?v=id
     for video in response.json()['items']:
         video_id = video['id']['videoId']
-        pprint(video_id)
         video_url = 'https://www.youtube.com/watch?v=' + video_id
-        print(video_url)
-        # videos.append(video_url)
-    # return videos
+        video_thumbnail_url = video['snippet']['thumbnails']['high']['url']
+        video_title = video['snippet']['title']
+        video_description = video['snippet']['description']
+        # JSON object append to list
+        videos.append({
+            'url': video_url,
+            'image': video_thumbnail_url,
+            'title': video_title,
+            'description': video_description
+        }
+        )
+
+    return videos
 
 
 def google_books_api(search_key):
@@ -96,7 +104,17 @@ def google_books_api(search_key):
     # get the url and hence the books of top 20 suggestions
     # the general youTube url : https://www.google.co.in/books/edition/
     for book in response.json()['items']:
-        book_url = book['volumeInfo']['infoLink']
-        print(book_url)
-        # books.append(book_url)
-    # return books
+        book_url = book['volumeInfo']['infoLink'] if 'infoLink' in book['volumeInfo'] else ''
+        book_title = book['volumeInfo']['title'] if 'title' in book['volumeInfo'] else ''
+        book_image = book['volumeInfo']['imageLinks']['thumbnail'] + '&zoom=0' if 'imageLinks' in book['volumeInfo'] else ''
+        book_description = book['volumeInfo']['description'] if 'description' in book['volumeInfo'] else ''
+        # JSON object append to list
+        books.append({
+            'url': book_url,
+            'image': book_image,
+            'title': book_title,
+            'description': book_description
+        }
+        )
+
+    return books

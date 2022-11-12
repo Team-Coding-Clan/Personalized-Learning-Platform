@@ -16,9 +16,12 @@ class connect(models.Model):
     class Meta:
         db_table = "connect"
 
-# class Resources(models.Model):
-#     skill = models.CharField(max_length = 500)
-#     youtube = models.JSONField()
-#     google_books = models.JSONField()
-#     class Meta:
-#         db_table = "resources"
+
+# list of JSON
+class Resources(models.Model):
+    skill = models.CharField(max_length = 500)
+    youtube = models.JSONField()
+    google_books = models.JSONField()
+
+    class Meta:
+        db_table = "resources"

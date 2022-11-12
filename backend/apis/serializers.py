@@ -6,6 +6,7 @@ from django.contrib.auth.password_validation import validate_password
 from .models import connect
 from .helpers import get_skills
 
+
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
     @classmethod
@@ -19,12 +20,12 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 class RegisterSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(
-        required=True,
-        validators=[UniqueValidator(queryset=User.objects.all())]
+        required = True,
+        validators = [UniqueValidator(queryset = User.objects.all())]
     )
 
-    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
-    password2 = serializers.CharField(write_only=True, required=True)
+    password = serializers.CharField(write_only = True, required = True, validators = [validate_password])
+    password2 = serializers.CharField(write_only = True, required = True)
 
     class Meta:
         model = User
@@ -43,11 +44,11 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user = User.objects.create_user(
-            username=validated_data['username'],
-            email=validated_data['email'],
-            first_name=validated_data['first_name'],  # name field's value accepted
+            username = validated_data['username'],
+            email = validated_data['email'],
+            first_name = validated_data['first_name'],  # name field's value accepted
             # last_name=validated_data['last_name'],
-            password=validated_data['password']
+            password = validated_data['password']
         )
 
         user.save()
@@ -64,11 +65,11 @@ class ConnectSerializer(serializers.ModelSerializer):
         """
         Create and return a new `connect` instance, given the validated data.
         """
-        # print(self.context)
+        print(validated_data)
         user = self.context['request'].user
         known_lang = get_skills(validated_data['github'])
-        info = connect.objects.create(
-            user_id=user,
+        info = connect.objects.update_or_create(
+            user_id = user,
             known_skills = known_lang,
             **validated_data
         )

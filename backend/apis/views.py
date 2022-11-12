@@ -3,7 +3,6 @@ from .forms import connect, FeedbackForm
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
 
-
 from .serializers import MyTokenObtainPairSerializer, RegisterSerializer, UserSerializer, ProfileSerializer, \
     ConnectSerializer
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -26,6 +25,7 @@ from rest_framework.status import (HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_403_F
                                    HTTP_409_CONFLICT, HTTP_511_NETWORK_AUTHENTICATION_REQUIRED)
 
 from .helpers import youtube_api, google_books_api
+from .models import Resources
 
 
 # login
@@ -122,45 +122,43 @@ class ProfileView(APIView):
         """
         Return particular user
         """
-        # print(request.user.pk)
         data = connect.objects.filter(user_id_id = request.user.pk)
-        # print(data)
         serializer_data = ProfileSerializer(data = data, many = True)
         serializer_data.is_valid()
         return Response(serializer_data.data)
 
 
+# will be a scheduler function
 @csrf_protect
 @api_view(['GET', ])
 @permission_classes((IsAuthenticated,))
 def get_recommendations(request):
     if request.method == 'GET':
         # try:
-        print(request.user.id)
-        user_profile = connect.objects.filter(user_id_id = request.user.id).get()
-        print(user_profile)
+        if not connect.objects.filter(user_id_id = request.user.id).exists():
+            return JsonResponse({'Status': 'Create a User profile first'})
+        user_profile = connect.objects.get(user_id_id = request.user.id)
         skills_to_learn = user_profile.skills_to_learn  # returns csvs
-        print(skills_to_learn, type(skills_to_learn))
-        print(list(map(str.strip, skills_to_learn.split(','))))
         skills_to_learn = list(map(str.strip, skills_to_learn.split(',')))
         known_skills = user_profile.known_skills  # returns a python list
-        print(known_skills, type(known_skills))
-        search_keys = ''
-
-        for skill in skills_to_learn:
-            youtube_api(skill)
-            google_books_api(skill)
-            # append in search key the returned url
-        # for skill in known_skills:
-        # youtube_api(skill)
+        search_keys = skills_to_learn + known_skills
 
         if not search_keys:
             return JsonResponse({'Status': 'No skills to learn'}, status = HTTP_200_OK)
 
+        # already skill exists in database
+        existing_skills = Resources.objects.values_list('skill', flat = True)
+        # remove from search_keys
+        # print(search_keys)
+        search_keys = set(search_keys) - set(existing_skills)
+        # print(existing_skills)
+        # print(search_keys)
+        # add into the database
+        for skill in search_keys:
+            resource = Resources(skill = skill, youtube = youtube_api(skill), google_books = google_books_api(skill))
+            resource.save()
+        return JsonResponse({'Status': 'True'}, status = HTTP_200_OK, safe = False)
         # call the APIs, this will go into the Task Scheduler
-        result = []
-        return JsonResponse({"Recommendations": result})
-
         # except Exception as e:
         #     return JsonResponse({'Status': 'Error Occurred'}, status = HTTP_400_BAD_REQUEST, safe = False)
 
