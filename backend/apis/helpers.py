@@ -61,6 +61,7 @@ def youtube_api(search_key):
     """
     Returns a list of max 20 videos per search_key
     """
+    search_key = search_key+" courses"
     params = {'key': KEY, 'type': 'video', 'part': 'snippet', 'q': search_key, 'maxResults': 20}
     response = requests.get('https://www.googleapis.com/youtube/v3/search', params = params)
     # in response, we need the video id
