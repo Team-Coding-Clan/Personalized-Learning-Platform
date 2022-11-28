@@ -65,7 +65,6 @@ class ConnectSerializer(serializers.ModelSerializer):
         """
         Create and return a new `connect` instance, given the validated data.
         """
-        print(validated_data)
         user = self.context['request'].user
         known_lang = get_skills(validated_data['github'])
         info = connect.objects.update_or_create(
@@ -73,7 +72,7 @@ class ConnectSerializer(serializers.ModelSerializer):
             known_skills = known_lang,
             **validated_data
         )
-        return info
+        return validated_data
 
     def update(self, instance, validated_data):
         # update the instance
