@@ -150,13 +150,22 @@ def get_recommendations(request):
         existing_skills = Resources.objects.values_list('skill', flat = True)
         # remove from search_keys
         # print(search_keys)
-        search_keys = set(search_keys) - set(existing_skills)
+
+        # the below line is commented as I have added count to the table of recommendations
+        # that means every skill counts :)
+        # search_keys = set(search_keys) - set(existing_skills)
+
         # print(existing_skills)
         # print(search_keys)
         # add into the database
         for skill in search_keys:
-            resource = Resources(skill = skill, youtube = youtube_api(skill), google_books = google_books_api(skill))
-            resource.save()
+            if Resources.objects.filter(skill = skill).exists():
+                count = Resources.objects.get(skill = skill).count
+                Resources.objects.filter(skill = skill).update(count = count + 1)
+            else:
+                resource = Resources(skill = skill, youtube = youtube_api(skill),
+                                     google_books = google_books_api(skill))
+                resource.save()
         return JsonResponse({'Status': 'True'}, status = HTTP_200_OK, safe = False)
         # call the APIs, this will go into the Task Scheduler
         # except Exception as e:
@@ -175,3 +184,48 @@ class FeedbackFormView(FormView):
 
 class SuccessView(TemplateView):
     template_name = "feedback/success.html"
+
+
+# @csrf_protect
+# @api_view(['GET', ])
+# @permission_classes((IsAuthenticated,))
+# def general_recommendations(request):
+#     """
+#     endpoint for general skill recommendation for homepage
+#     """
+
+
+@csrf_protect
+@api_view(['GET', ])
+@permission_classes((IsAuthenticated,))
+def personalised_recommendations(request):
+    """
+    endpoint for personalised skill recommendations
+    ordered by skill
+    """
+
+    # get the already known skills
+    # and the new skills
+    known_skills = connect.objects.get(user_id_id = request.user.id).known_skills
+    new_skills = connect.objects.get(user_id_id = request.user.id).skills_to_learn
+    new_skills = list(map(str.strip, new_skills.split(',')))
+
+    # print(type(known_skills))
+    # print(type(new_skills))
+    skills = known_skills + new_skills
+    # get the recommendations
+    # 2 for youtube of each skill
+    # 1 book recommendation
+    # these have to be arranged by languages
+    recommendations = []
+
+    for skill in skills:
+        recomm = {}
+        data = Resources.objects.filter(skill = skill).values()
+        recomm[skill] = [data[0]['youtube'][0], data[0]['youtube'][1], data[0]['google_books'][0]]
+        recommendations.append(recomm)
+    # print(data[0]['youtube'][0])
+    # print(data[0]['youtube'][1])
+    # print(data[0]['google_books'][0])
+    # print(recommendations)
+    return Response(recommendations, status = HTTP_200_OK)

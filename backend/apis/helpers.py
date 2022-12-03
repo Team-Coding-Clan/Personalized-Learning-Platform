@@ -1,6 +1,7 @@
 from urllib.parse import urlparse
 import requests
 from pprint import pprint
+from celery import shared_task
 
 GITHUB_URL = "https://api.github.com/"
 headers = {
@@ -10,12 +11,14 @@ KEY = 'AIzaSyA78Bfr50t93zRCpnypkxEUulcpGFdgIA0'
 GOOGLE_BOOKS_KEY = 'AIzaSyA78Bfr50t93zRCpnypkxEUulcpGFdgIA0'
 
 
+@shared_task
 def rate_limit_check():
     response = requests.get('https://api.github.com/rate_limit')
     remaining_requests = response.json()['resources']['core']['remaining']
     return remaining_requests > 0
 
 
+@shared_task
 def get_skills(github_profile):
     # https: // api.github.com / repos / Shikha291 /${name} / languages
     # 'https://www.github.com/tawishisharma/'
@@ -51,17 +54,18 @@ def get_skills(github_profile):
 
     languages = list(languages)
     # put into database
+    # print("get_skills")
     return languages
 
 
 # image link, url, title, description, source
 
-
+@shared_task
 def youtube_api(search_key):
     """
     Returns a list of max 20 videos per search_key
     """
-    search_key = search_key+" courses"
+    search_key = search_key + " courses"
     params = {'key': KEY, 'type': 'video', 'part': 'snippet', 'q': search_key, 'maxResults': 20}
     response = requests.get('https://www.googleapis.com/youtube/v3/search', params = params)
     # in response, we need the video id
@@ -86,10 +90,11 @@ def youtube_api(search_key):
             'description': video_description
         }
         )
-
+    # print("youtube")
     return videos
 
 
+@shared_task
 def google_books_api(search_key):
     """
        Returns a list of max 20 books per search_key
@@ -107,7 +112,8 @@ def google_books_api(search_key):
     for book in response.json()['items']:
         book_url = book['volumeInfo']['infoLink'] if 'infoLink' in book['volumeInfo'] else ''
         book_title = book['volumeInfo']['title'] if 'title' in book['volumeInfo'] else ''
-        book_image = book['volumeInfo']['imageLinks']['thumbnail'] + '&zoom=0' if 'imageLinks' in book['volumeInfo'] else ''
+        book_image = book['volumeInfo']['imageLinks']['thumbnail'] + '&zoom=0' if 'imageLinks' in book[
+            'volumeInfo'] else ''
         book_description = book['volumeInfo']['description'] if 'description' in book['volumeInfo'] else ''
         # JSON object append to list
         books.append({
@@ -117,5 +123,5 @@ def google_books_api(search_key):
             'description': book_description
         }
         )
-
+    # print("google_books")
     return books

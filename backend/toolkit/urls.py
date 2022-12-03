@@ -3,9 +3,6 @@ from django.urls import path
 from apis import views
 from rest_framework_simplejwt.views import TokenRefreshView
 
-# from connect.views import userConnect
-
-
 urlpatterns = [
     path('admin/', admin.site.urls),
 
@@ -35,5 +32,7 @@ urlpatterns = [
 
     path("feedback/", views.FeedbackFormView.as_view(), name = "feedback"),
     path("success/", views.SuccessView.as_view(), name = "success"),
+
+    path("personalized_recommendations/", views.personalised_recommendations, name = "personalised_recommendaitons")
 
 ]
