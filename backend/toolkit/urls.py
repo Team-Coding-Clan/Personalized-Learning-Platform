@@ -33,6 +33,6 @@ urlpatterns = [
     path("feedback/", views.FeedbackFormView.as_view(), name = "feedback"),
     path("success/", views.SuccessView.as_view(), name = "success"),
 
-    path("personalized_recommendations/", views.personalised_recommendations, name = "personalised_recommendaitons")
-
+    path("personalized_recommendations/", views.personalised_recommendations, name = "personalised_recommendations"),
+    path("general_recommendations/", views.general_recommendations, name = "general_recommendations")
 ]

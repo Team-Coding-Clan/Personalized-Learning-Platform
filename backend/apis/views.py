@@ -186,13 +186,22 @@ class SuccessView(TemplateView):
     template_name = "feedback/success.html"
 
 
-# @csrf_protect
-# @api_view(['GET', ])
-# @permission_classes((IsAuthenticated,))
-# def general_recommendations(request):
-#     """
-#     endpoint for general skill recommendation for homepage
-#     """
+@csrf_protect
+@api_view(['GET', ])
+@permission_classes((IsAuthenticated,))
+def general_recommendations(request):
+    """
+    endpoint for general skill recommendation for homepage
+    """
+    # Reserved.objects.filter(client=client_id).order_by('-check_in')
+    # get most common 5 skills for general recommendations
+    recommendations = []
+    entries = Resources.objects.all().order_by('-count')[:5]
+    for entry in entries:
+        recomm = {}
+        recomm[entry.skill] = [entry.youtube[0], entry.youtube[1], entry.google_books[0]]
+        recommendations.append(recomm)
+    return Response(recommendations, status = HTTP_200_OK)
 
 
 @csrf_protect
